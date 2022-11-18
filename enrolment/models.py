@@ -20,12 +20,11 @@ class Course(models.Model): #강의 테이블(PK = 과목번호, 분반)
     professorName = models.TextField() #교수명
     limitNumber = models.IntegerField() #정원
     currentNumber = models.IntegerField() #현재 수강 신청 인원
-#
-# class ApplyCourse(models.Model):
-#     studentNumber = models.ForeignKey(Student)
-#     subjectNumber = models.ForeignKey(Course)
-#     classNumber = models.ForeignKey(Course)
-#
+
+class ApplyCourse(models.Model):
+    studentNumber = models.ForeignKey(Student, on_delete=models.deletion)
+    courseNumber = models.ForeignKey(Course, on_delete=models.deletion)
+
 # class Admin(models.Model):
 #     adminEmail = models.EmailField()
 #     adminPassword = models.TextField()
