@@ -23,8 +23,8 @@ class Course(models.Model):  # 강의 테이블(PK = 학수번호)
 
 
 class ApplyCourse(models.Model):  # 수강신청 테이블
-    studentNumber = models.ForeignKey(Student, on_delete=models.deletion)  # Student table의 PK인 studentNumber
-    courseNumber = models.ForeignKey(Course, on_delete=models.deletion)  # Course table의 PK인 courseNumber
+    studentNumber = models.ForeignKey(Student, on_delete=models.CASCADE)  # Student table의 PK인 studentNumber
+    courseNumber = models.ForeignKey(Course, on_delete=models.CASCADE)  # Course table의 PK인 courseNumber
 
 
 class Admin(models.Model): # 관리자 테이블
