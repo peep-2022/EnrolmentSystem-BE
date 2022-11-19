@@ -1,5 +1,9 @@
 from django.db import models
 
+# DB에 관한 내용들
+# 태이블 생성할때마다   python manage.py makemigrations
+#                    python manage.py migrate
+# 그리고 admin.py에서 admin.site.register(User) 해줘야댐
 
 class Student(models.Model):  # 학생 테이블(PK = 학번)
     studentNumber = models.TextField(primary_key=True)  # 학번
