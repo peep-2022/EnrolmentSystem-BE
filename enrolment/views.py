@@ -37,3 +37,20 @@ class dropClass(APIView):
             AC.delete()
             return Response({"returnCode": "Success"})
         return Response({"returnCode": "Fail"})
+
+class adminDelete(APIView):
+    def get(self, request):
+        _courseNumber = request.query_params.get('courseNumber')
+
+        course = Course.objects.get(courseNumber=_courseNumber)
+        course.delete()
+
+        if course:
+            return Response({
+                'returnCode': 'Success'
+            })
+
+        return Response({
+                'returnCode': 'Fail'
+            })
+
