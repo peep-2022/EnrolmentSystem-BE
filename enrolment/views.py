@@ -32,7 +32,12 @@ class AdminUpdate(APIView):
         course.majorName = _majorName
         course.save()
 
+        if course:
+            return Response({
+                'returnCode': 'Success'
+            })
+
         return Response({
-            'returnCode': 'Success'
-        })
+                'returnCode': 'Fail'
+            })
 
