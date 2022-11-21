@@ -27,7 +27,7 @@ class showEnrolmentList(APIView):
         })
 
 class dropClass(APIView):
-    def get(self, request):
+    def delete(self, request):
         _studentNumber = request.query_params.get('studentNumber')
         _courseNumber = request.query_params.get('courseNumber')
 

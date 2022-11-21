@@ -22,7 +22,7 @@ class Course(models.Model):  # 강의 테이블(PK = 학수번호)
     currentNumber = models.IntegerField()  # 현재 수강 신청 인원
 
 
-class ApplyCourse(models.Model):  # 수강신청 테이블
+class ApplyCourse(models.Model):  # 수강신청 테이블1
     studentNumber = models.ForeignKey(Student, on_delete=models.CASCADE)  # Student table의 PK인 studentNumber
     courseNumber = models.ForeignKey(Course, on_delete=models.CASCADE)  # Course table의 PK인 courseNumber
 
