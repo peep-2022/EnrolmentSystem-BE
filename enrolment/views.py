@@ -1,7 +1,8 @@
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.shortcuts import render
-from .models import Class
+from .models import Course
+
 
 # Create your views here.
 
@@ -11,32 +12,32 @@ class searchList(APIView):
         # 요청변수를 추출하여 변수에 저장
         _majorName = request.query_params.get('majorName')
         _grade = request.query_params.get('grade')
+        _credit = request.query_params.get('credit')
         _professorName = request.query_params.get('professorName')
         _subjectName = request.query_params.get('subjectName')
-        _subjectNumber = request.query_params.get('subjectNumber')
+        _courseNumber = request.query_params.get('courseNumber')
         _classNumber = request.query_params.get('classNumber')
+        _currentNumber = request.query_params.get('currentNumber')
+        _limitNumber = request.query_params.get('limitNumber')
 
-        if _majorName == '대학 학과공통' :
-            print("대학학과공통")
-            cls = Class.objects.filter(grade=_grade, professorName=_professorName,
-                                    subjectName=_subjectName, subjectNumber=_subjectNumber, classNumber=_classNumber).values()
-        else :
-            cls = Class.objects.filter(majorName=_majorName, grade=_grade, professorName=_professorName,
-            subjectName=_subjectName, subjectNumber=_subjectNumber, classNumber=_classNumber).values()
+        if _majorName == '대학 학과공통':
+            cls = Course.objects.filter(grade=_grade, credit=_credit, subjectName=_subjectName,
+                                        courseNumber=_courseNumber, professorName=_professorName,
+                                        limitNumber=_limitNumber, currentNumber=_currentNumber).values()
+        else:
+            cls = Course.objects.filter(majorName=_majorName, grade=_grade, credit=_credit, subjectName=_subjectName,
+                                        courseNumber=_courseNumber, professorName=_professorName,
+                                        limitNumber=_limitNumber, currentNumber=_currentNumber).values()
 
-        print(cls)
+        return_list = list()
+        for item in return_list :
+            return_list.append(item)
 
+        if return_list :
+            return Response(cls)
         return Response({
-            cls
-            # 'majorName': cls.majorName,
-            # 'grade': cls.grade,
-            # 'credit': cls.credit,
-            # 'subjectName': cls.subjectName,
-            # 'subjectNumber': cls.subjectNumber,
-            # 'classNumber': cls.classNumber,
-            # 'professorName': cls.professorName,
-            # 'limitNumber': cls.limitNumber,
-            # 'currentNumber': cls.currentNumber
+            'returnCode' : 'NoneError'
         })
+
 
     # setting에 restframework 넣어주어야함
