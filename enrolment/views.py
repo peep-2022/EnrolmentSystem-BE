@@ -1,7 +1,7 @@
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .models import ApplyCourse, Course
+from .models import ApplyCourse, Course, Admin, Student
 from .serializers import CourseSerializer
 
 
@@ -54,3 +54,30 @@ class adminDelete(APIView):
                 'returnCode': 'Fail'
             })
 
+class login(APIView):
+    def get(self, request):
+        _isStudent = request.query_params.get('isStudent')
+        _id = request.query_params.get('id')
+        _password = request.query_params.get('password')
+
+        answer = False
+        if _isStudent == 'true':
+            for student in Student.objects.all():
+                if student.studentNumber == _id:
+                    if student.password == _password:
+                        answer = True
+
+        elif _isStudent == 'false':
+            for admin in Admin.objects.all():
+                if admin.email == _id:
+                    if admin.password == _password:
+                        answer = True
+
+        if answer == True:
+            return Response({
+                'isSuccess': 'true'
+            })
+        else:
+            return Response({
+                'isSuccess': 'fail'
+            })
