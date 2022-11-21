@@ -3,5 +3,5 @@ from django.urls import path
 from enrolment.views import AdminUpdate
 
 urlpatterns = [
-    path('adminUpdate/', AdminUpdate.as_view())
+    path('adminUpdate', AdminUpdate.as_view(), name="adminUpdate")
 ]
