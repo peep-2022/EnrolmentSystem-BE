@@ -44,21 +44,23 @@ class login(APIView):
         _id = request.query_params.get('id')
         _password = request.query_params.get('password')
 
-        if _isStudent == True:
-            for student in Student:
+        answer = False
+        if _isStudent == 'true':
+            for student in Student.objects.all():
                 if student.studentNumber == _id:
                     if student.password == _password:
-                        return Response({
-                            'isSuccess': 'true'
-                        })
-        elif _isStudent == False:
-            for admin in Admin:
+                        answer = True
+
+        elif _isStudent == 'false':
+            for admin in Admin.objects.all():
                 if admin.email == _id:
                     if admin.password == _password:
-                        return Response({
-                            'isSuccess': 'true'
-                        })
+                        answer = True
 
+        if answer == True:
+            return Response({
+                'isSuccess': 'true'
+            })
         else:
             return Response({
                 'isSuccess': 'fail'
