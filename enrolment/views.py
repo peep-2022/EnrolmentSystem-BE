@@ -33,6 +33,7 @@ class AdminUpdate(APIView):
             course.professorName = _professorName
             course.majorName = _majorName
             course.save()
+            Course.objects.get(courseNumber=_oldCourseNumber).delete()
             return Response({
                 'returnCode': 'Success'
             })
