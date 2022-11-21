@@ -6,8 +6,8 @@ from .models import Course
 
 class AdminUpdate(APIView):
     def get(self, request):
-        _oldCourseNumber = request.query_params.get('oldCourseNum')
-        _newCourseNumber = request.query_params.get('newCourseNum')
+        _oldCourseNumber = urllib.parse.unquote(request.query_params.get('oldCourseNum'))
+        _newCourseNumber = urllib.parse.unquote(request.query_params.get('newCourseNum'))
         _subjectName = urllib.parse.unquote(request.query_params.get('subjectName'))
         _limitNumber = request.query_params.get('limitNumber')
         _grade = request.query_params.get('grade')
@@ -24,17 +24,22 @@ class AdminUpdate(APIView):
                         'returnCode': 'OverlappedError'
                     })
             #존재하지 않던 학수번호로 변경 시도
-            old_course = Course.objects.get(courseNumber=_oldCourseNumber)
-            old_course.delete() #기존 컬럼 삭제
-            new_course = Course(courseNumber = _newCourseNumber, subjectName = _subjectName, limitNumber=_limitNumber, grade=_grade, credit=_credit, professorName=_professorName, majorName=_majorName)
-            new_course.save() #새로운 학수번호로 새 컬럼 생성
+            course = Course.objects.get(courseNumber=_oldCourseNumber)
+            course.courseNumber = _newCourseNumber
+            course.subjectName = _subjectName
+            course.limitNumber = _limitNumber
+            course.grade = _grade
+            course.credit = _credit
+            course.professorName = _professorName
+            course.majorName = _majorName
+            course.save()
             return Response({
                 'returnCode': 'Success'
             })
 
         else: #학수번호 동일, 다른 항목 변경
             isChange = False
-            course = Course.objects.get(courseNumber= _newCourseNumber)
+            course = Course.objects.get(courseNumber= _oldCourseNumber)
             # Course 테이블에서 _courseNumber와 같은 값을 가진 튜플 가져옴
 
             if course.subjectName != _subjectName:
