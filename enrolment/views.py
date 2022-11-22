@@ -6,7 +6,6 @@ import urllib
 
 
 # Create your views here.
-
 class searchList(APIView):
     def get(self, request):
         # DB에 접근하는 코드
@@ -26,41 +25,38 @@ class searchList(APIView):
             cls = Course.objects.all()
         else :
             cls = Course.objects.filter(majorName=_majorName)
-        print(cls.count())
-        # courseNumber가 있을경우 filter
+
         try :
+            # courseNumber가 있을경우 filter
             if _courseNumber != 'None':
-                print("courseNumber not None")
                 cls = cls.filter(courseNumber=_courseNumber)
-            print(cls.count())
 
             # grade가 있을경우 filter
             if _grade != '0' :
-                print("grade None")
                 cls = cls.filter(grade=_grade)
-            print(cls.count())
+
             # professorName가 있을경우 filter 해당 문자열으로 시작하는 값 / 끝나는 값 / 포함하는 값을 모두 포함하게 검색
             if _professorName != 'None':
-                print("professorName not None")
                 cls = cls.filter(professorName__istartswith=_professorName) \
                       | cls.filter(professorName__iendswith=_professorName) \
                       | cls.filter(professorName__icontains=_professorName)
-            print(cls.count())
-            # currentNumber가 있을경우 filter
+
+            # currentNumber가 있을경우 filter 해당 문자열으로 시작하는 값 / 끝나는 값 / 포함하는 값을 모두 포함하게 검색
             if _subjectName != 'None':
-                print("subjectName not None")
                 cls = cls.filter(subjectName__istartswith=_subjectName) \
                       | cls.filter(subjectName__iendswith=_subjectName) \
                       | cls.filter(subjectName__icontains=_subjectName)
-            print(cls.count())
+
             if cls : # 필터링된 value가 있는경우 response해준다
-                print("return response")
                 return Response(cls.values())
 
-            return Response(cls)
+            else :
+                return Response({
+                    'returnCode': 'NoneError'
+                })
         except:
             return Response({
-                'returnCode': 'NoneError'
+                'returnCode': 'Error'
             })
 
 
