@@ -2,6 +2,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from .models import ApplyCourse, Course, Admin, Student
 from django.shortcuts import render
+from .serializers import CourseSerializer
 
 # changeEnrolmentTime에 사용
 from datetime import datetime
@@ -112,16 +113,16 @@ class enrolment(APIView):
             })
 
         # 수강신청 가능 시간 확인
-        _startTimeStamp = sysStartTime()
-        _endTimeStamp = sysEndTime()
-        sysStartTimeStamp = time.mktime(_startTimeStamp.timetuple())
-        sysEndTimeStamp = time.mktime(_endTimeStamp.timetuple())
-
-        todaytimestamp = time.time()
-        if (todaytimestamp - sysStartTimeStamp < 0) | (sysEndTimeStamp - todaytimestamp < 0) :
-            return Response({
-                'returnCode': 'TimeError'
-            })
+        # _startTimeStamp = sysStartTime()
+        # _endTimeStamp = sysEndTime()
+        # sysStartTimeStamp = time.mktime(_startTimeStamp.timetuple())
+        # sysEndTimeStamp = time.mktime(_endTimeStamp.timetuple())
+        #
+        # todaytimestamp = time.time()
+        # if (todaytimestamp - sysStartTimeStamp < 0) | (sysEndTimeStamp - todaytimestamp < 0) :
+        #     return Response({
+        #         'returnCode': 'TimeError'
+        #     })
 
         # 이미 수강신청 했는지 확인
         students_enrolmented_course = ApplyCourse.objects.filter(studentNumber=_studentNumber)
@@ -226,7 +227,7 @@ class adminDelete(APIView):
         _courseNumber = request.query_params.get('courseNumber')
 
         course = Course.objects.get(courseNumber=_courseNumber)
-        # course.delete()
+        course.delete()
 
         if course:
             AC_list = ApplyCourse.objects.filter(courseNumber=_courseNumber)

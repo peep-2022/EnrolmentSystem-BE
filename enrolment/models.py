@@ -34,3 +34,4 @@ class ApplyCourse(models.Model):  # 수강신청 테이블1
 class Admin(models.Model): # 관리자 테이블
     email = models.EmailField() # 관리자 이메일
     password = models.TextField() # 관리자 비밀번호
+
