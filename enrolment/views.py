@@ -1,9 +1,12 @@
 from rest_framework.response import Response
 from rest_framework.views import APIView
+
 from .serializers import CourseSerializer
 from django.shortcuts import render
 from .models import ApplyCourse, Course, Admin, Student
 import urllib
+
+from django.core.mail import EmailMessage
 
 class searchList(APIView):
     def get(self, request):
@@ -174,11 +177,25 @@ class adminDelete(APIView):
         _courseNumber = request.query_params.get('courseNumber')
 
         course = Course.objects.get(courseNumber=_courseNumber)
-        course.delete()
+        # course.delete()
 
         if course:
+            AC_list = ApplyCourse.objects.filter(courseNumber=_courseNumber)
+            userEmail_list = list()
+            for item in AC_list:
+                user = Student.objects.get(studentNumber=item.studentNumber.studentNumber)
+                userEmail_list.append(user.email)
+
+            for uEmail in userEmail_list:
+                message = '안녕하세요 충남대학교입니다. \n 다음의 교과목이 폐강되었음을 알립니다. \n\n ---------------------------------------- \n 과목명 : %s \n 학수 번호 : %s \n ---------------------------------------- \n\n 감사합니다.' % (course.subjectName, course.courseNumber)
+                email = EmailMessage(
+                    '충남대학교 수강신청 교과목 폐강 알림',  # 이메일 제목
+                     message,  # 내용
+                    to=[uEmail],  # 받는 이메일
+                )
+                email.send()
             return Response({
-                'returnCode': 'Success'
+                "D":"D"
             })
 
         return Response({
