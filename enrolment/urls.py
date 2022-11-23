@@ -10,3 +10,4 @@ urlpatterns = [
     path('enrolment', enrolment.as_view(), name='enrolment'),
     path('search', searchList.as_view(), name='Class')
 ]
+

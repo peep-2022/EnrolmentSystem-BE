@@ -111,6 +111,9 @@ class enrolment(APIView):
         try:
             _student.credit = _student.credit + seleted_course.credit
             _student.save()
+            seleted_course.currentNumber = _currentNumber + 1
+            seleted_course.save()
+
             print("credit 덧셈 완료")
             ApplyCourse.objects.create(studentNumber=_student, courseNumber=seleted_course)
             print("apply_course 생성 완료")
@@ -154,7 +157,13 @@ class dropClass(APIView):
         _courseNumber = request.query_params.get('courseNumber')
 
         AC = ApplyCourse.objects.filter(studentNumber=_studentNumber, courseNumber=_courseNumber)
+        selectedCourse = Course.objects.get(courseNumber=_courseNumber)
 
+        cNumber = selectedCourse.currentNumber
+        if cNumber != 0 :
+            cNumber = cNumber - 1
+            selectedCourse.currentNumber = cNumber
+            selectedCourse.save()
         if AC:
             AC.delete()
             return Response({"returnCode": "Success"})
