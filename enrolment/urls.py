@@ -8,7 +8,7 @@ urlpatterns = [
     path('adminDelete', adminDelete.as_view(), name='adminDelete'),
     path('login', login.as_view(), name='login'),
     path('enrolment', enrolment.as_view(), name='enrolment'),
-    path('changeEnrolmentTime', changeEnrolmentTime.as_view(), name='changeEnrolmentTime')
-    path('search', searchList.as_view(), name='Class')
+    path('changeEnrolmentTime', changeEnrolmentTime.as_view(), name='changeEnrolmentTime'),
+    path('search', searchList.as_view(), name='Class'),
     path('adminUpdate', AdminUpdate.as_view(), name="adminUpdate")
 ]
