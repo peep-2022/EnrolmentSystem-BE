@@ -1,11 +1,7 @@
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .models import ApplyCourse, Course, Admin, Student
-from .serializers import CourseSerializer
-from .serializers import CourseSerializer
 from django.shortcuts import render
-from .models import ApplyCourse, Course, Admin, Student
-import urllib
 
 # changeEnrolmentTime에 사용
 from datetime import datetime
@@ -44,6 +40,8 @@ class changeEnrolmentTime(APIView):
             return Response({
                 'returnCode': 'Fail'
             })
+
+from django.core.mail import EmailMessage
 
 class searchList(APIView):
     def get(self, request):
@@ -164,6 +162,11 @@ class enrolment(APIView):
             # 학생데이터의 수강학점을 추가해주고 수강신청디비에 object 추가
             _student.credit = _student.credit + seleted_course.credit
             _student.save()
+            seleted_course.currentNumber = _currentNumber + 1
+            seleted_course.save()
+
+            print("credit 덧셈 완료")
+
             ApplyCourse.objects.create(studentNumber=_student, courseNumber=seleted_course)
             return Response({
                 'returnCode': 'Success'
@@ -205,7 +208,13 @@ class dropClass(APIView):
         _courseNumber = request.query_params.get('courseNumber')
 
         AC = ApplyCourse.objects.filter(studentNumber=_studentNumber, courseNumber=_courseNumber)
+        selectedCourse = Course.objects.get(courseNumber=_courseNumber)
 
+        cNumber = selectedCourse.currentNumber
+        if cNumber != 0 :
+            cNumber = cNumber - 1
+            selectedCourse.currentNumber = cNumber
+            selectedCourse.save()
         if AC:
             AC.delete()
             return Response({"returnCode": "Success"})
@@ -217,11 +226,25 @@ class adminDelete(APIView):
         _courseNumber = request.query_params.get('courseNumber')
 
         course = Course.objects.get(courseNumber=_courseNumber)
-        course.delete()
+        # course.delete()
 
         if course:
+            AC_list = ApplyCourse.objects.filter(courseNumber=_courseNumber)
+            userEmail_list = list()
+            for item in AC_list:
+                user = Student.objects.get(studentNumber=item.studentNumber.studentNumber)
+                userEmail_list.append(user.email)
+
+            for uEmail in userEmail_list:
+                message = '안녕하세요 충남대학교입니다. \n 다음의 교과목이 폐강되었음을 알립니다. \n\n ---------------------------------------- \n 과목명 : %s \n 학수 번호 : %s \n ---------------------------------------- \n\n 감사합니다.' % (course.subjectName, course.courseNumber)
+                email = EmailMessage(
+                    '충남대학교 수강신청 교과목 폐강 알림',  # 이메일 제목
+                     message,  # 내용
+                    to=[uEmail],  # 받는 이메일
+                )
+                email.send()
             return Response({
-                'returnCode': 'Success'
+                "D":"D"
             })
 
         return Response({
@@ -255,4 +278,78 @@ class login(APIView):
         else:
             return Response({
                 'isSuccess': 'fail'
+            })
+
+class AdminUpdate(APIView):
+    def get(self, request):
+        # 요청변수값 변수에 저장
+        _oldCourseNumber = urllib.parse.unquote(request.query_params.get('oldCourseNum'))
+        _newCourseNumber = urllib.parse.unquote(request.query_params.get('newCourseNum'))
+        _subjectName = urllib.parse.unquote(request.query_params.get('subjectName'))
+        _limitNumber = request.query_params.get('limitNumber')
+        _grade = request.query_params.get('grade')
+        _credit = request.query_params.get('credit')
+        _professorName = urllib.parse.unquote(request.query_params.get('professorName'))
+        _majorName = urllib.parse.unquote(request.query_params.get('majorName'))
+
+        # 기존 학수번호와 변경하고자 하는 학수번호가 동일한지 확인
+        if _oldCourseNumber != _newCourseNumber:
+            for c in Course.objects.all():
+                if c.courseNumber == _newCourseNumber: #이미 존재하는 학수번호로 변경을 시도할 때
+                    return Response({
+                        'returnCode': 'OverlappedError' #중복 에러
+                    })
+
+            #존재하지 않는 학수번호로 변경을 시도할 때
+            course = Course.objects.get(courseNumber=_oldCourseNumber) #학수번호로 수정이 필요한 튜플을 가져옴
+            course.courseNumber = _newCourseNumber
+            course.subjectName = _subjectName
+            course.limitNumber = _limitNumber
+            course.grade = _grade
+            course.credit = _credit
+            course.professorName = _professorName
+            course.majorName = _majorName
+            course.save() #수정된 새로운 튜플이 저장됨
+            Course.objects.get(courseNumber=_oldCourseNumber).delete() #기존 튜플 제거
+            return Response({
+                'returnCode': 'Success' #수정 성공
+            })
+
+        else: #학수번호 동일, 다른 항목 변경할 때
+            isChange = False
+            course = Course.objects.get(courseNumber= _oldCourseNumber)
+            # Course 테이블에서 _courseNumber와 같은 값을 가진 튜플 가져옴
+
+            if course.subjectName != _subjectName:
+                course.subjectName = _subjectName
+                isChange = True
+            if course.limitNumber != _limitNumber:
+                course.limitNumber = _limitNumber
+                isChange = True
+            if course.grade != _grade:
+                course.grade = _grade
+                isChange = True
+            if course.credit != _credit:
+                course.credit = _credit
+                isChange = True
+            if course.professorName != _professorName:
+                course.professorName = _professorName
+                isChange = True
+            if course.majorName != _majorName:
+                course.majorName = _majorName
+                isChange = True
+
+            course.save() #수정된 튜플 저장
+
+            if isChange == False:
+                return Response({ #아무것도 변경되지 않음
+                    'returnCode': 'NoChangeError'
+                })
+            else:
+                return Response({ #수정 성공
+                    'returnCode': 'Success'
+                })
+
+        return Response({ #기타 오류
+                'returnCode': 'Fail'
             })
