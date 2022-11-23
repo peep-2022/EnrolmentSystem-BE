@@ -1,6 +1,6 @@
 from django.urls import path
 from django.conf import settings
-from .views import showEnrolmentList, dropClass, adminDelete, login, enrolment, searchList, AdminUpdate
+from .views import showEnrolmentList, dropClass, adminDelete, login, enrolment, searchList, changeEnrolmentTime, AdminUpdate
 
 urlpatterns = [
     path('showEnrolmentList', showEnrolmentList.as_view(), name='showEnrolmentList'),
@@ -8,6 +8,7 @@ urlpatterns = [
     path('adminDelete', adminDelete.as_view(), name='adminDelete'),
     path('login', login.as_view(), name='login'),
     path('enrolment', enrolment.as_view(), name='enrolment'),
-    path('search', searchList.as_view(), name='Class'),
+    path('changeEnrolmentTime', changeEnrolmentTime.as_view(), name='changeEnrolmentTime')
+    path('search', searchList.as_view(), name='Class')
     path('adminUpdate', AdminUpdate.as_view(), name="adminUpdate")
 ]
